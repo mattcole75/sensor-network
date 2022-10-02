@@ -64,7 +64,7 @@ const View = () => {
                     }
                 </div>
 
-                <div className='form-floating  col-sm-6'>
+                <div className='form-floating col-sm-6'>
                     {sensor
                         ? <Details sensor={sensor} lastSensorMessage={lastSensorMessage} />
                         : <div>Loading...</div>

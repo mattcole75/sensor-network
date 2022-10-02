@@ -35,7 +35,7 @@ const Login = () => {
             <Backdrop show={loading} />
                 {spinner}
             {error &&
-                <div className='alert alert-danger' role='alert'>
+                <div className='alert alert-danger text-wrap text-break' role='alert'>
                     {error.message}
                 </div>
             }

@@ -65,72 +65,91 @@ const sensorFail = (error) => {
 export const postSensor = (data, identifier) => {
 
     return async dispatch => {
-        try {
 
-            dispatch(sensorStart());
+        dispatch(sensorStart());
 
-            await addDoc(collection(db, 'sensors'), data)
-                .then(res => {
-                    const { id } = res
-                    dispatch(sensorPostSuccess(id, data, identifier));
-                })
-                .then(() => {
-                    dispatch(sensorFinish());
-                });
-
-        } catch (err) {
-            dispatch(sensorFail(err));
-        };
+        await addDoc(collection(db, 'sensors'), data)
+            .then(res => {
+                const { id } = res
+                dispatch(sensorPostSuccess(id, data, identifier));
+            })
+            .then(() => {
+                dispatch(sensorFinish());
+            })
+            .catch(err => {
+                dispatch(sensorFail(err));
+            });
     }
 }
 
-export const getSensors = (identifier) => {
+export const getSensors = (site, status, identifier) => {
 
     return  async dispatch => {
-        try {
-            dispatch(sensorStart());
 
-            let result = [];
+        dispatch(sensorStart());
 
-            const q = query(collection(db, 'sensors'), where('inuse', '==', true), orderBy('installed', 'desc'));
+        let result = [];
+        let queryFilter = null;
 
-            await getDocs(q)
-                .then(res => {
-                    // eslint-disable-next-line array-callback-return
-                    res.docs.map(doc => {
-                        result.push({ [doc.id]: doc.data() });
-                    })
-                    dispatch(sensorsGetSuccess(result, identifier));
-                })
-                .then(() => {
-                    dispatch(sensorFinish());
-                });
-    
-        } catch (err) {
-            dispatch(sensorFail(err));
+        if(site !== '' && status !== '') {
+            queryFilter = query(collection(db, 'sensors'),
+                where('inuse', '==', true),
+                where('site', '==', site),
+                where('status', '==', status),
+                orderBy('installed', 'desc'));
+        } else if(site !== ''){
+            queryFilter = query(collection(db, 'sensors'),
+                where('inuse', '==', true),
+                where('site', '==', site),
+                orderBy('installed', 'desc'));
         }
+        else if (status !== '') {
+            queryFilter = query(collection(db, 'sensors'),
+                where('inuse', '==', true),
+                where('status', '==', status),
+                orderBy('installed', 'desc'));
+        } else {
+            queryFilter = query(collection(db, 'sensors'),
+                where('inuse', '==', true),
+                orderBy('installed', 'desc'));
+        }
+        
+
+        await getDocs(queryFilter)
+            .then(res => {
+                // eslint-disable-next-line array-callback-return
+                res.docs.map(doc => {
+                    result.push({ [doc.id]: doc.data() });
+                })
+                dispatch(sensorsGetSuccess(result, identifier));
+            })
+            .then(() => {
+                dispatch(sensorFinish());
+            })
+            .catch(err => {
+                dispatch(sensorFail(err));
+            });
     };
 }
 
 export const getSensor = (uid, identifier) => {
 
     return async dispatch => {
-        try {
-            dispatch(sensorStart());
 
-            const ref = doc(db, "sensors", uid);
+        dispatch(sensorStart());
 
-            await getDoc(ref)
-                .then(doc => {
-                    dispatch(sensorGetSuccess({ [doc.id]: doc.data() }, identifier));
-                })
-                .then (() => {
-                    dispatch(sensorFinish());
-                });
+        const ref = doc(db, "sensors", uid);
 
-        } catch (err) {
-            dispatch(sensorFail(err));
-        }
+        await getDoc(ref)
+            .then(doc => {
+                dispatch(sensorGetSuccess({ [doc.id]: doc.data() }, identifier));
+            })
+            .then (() => {
+                dispatch(sensorFinish());
+            })
+            .catch(err => {
+                dispatch(sensorFail(err));
+            });
     };
 }
 
@@ -138,24 +157,20 @@ export const patchSensor = (uid, data, identifier) => {
 
     return async dispatch => {
 
-        try {
-            dispatch(sensorStart());
+        dispatch(sensorStart());
 
-            const ref = doc(db, "sensors", uid);
+        const ref = doc(db, "sensors", uid);
 
-            await updateDoc(ref, data)
-                .then(() => {
-                    dispatch(sensorPatchSuccess(uid, { [uid]: data }, identifier));
-                })
-                .then(() => {
-                    dispatch(sensorFinish());
-                })
-
-        } catch (err) {
-            
-            dispatch(sensorFail(err));
-        }
-
+        await updateDoc(ref, data)
+            .then(() => {
+                dispatch(sensorPatchSuccess(uid, { [uid]: data }, identifier));
+            })
+            .then(() => {
+                dispatch(sensorFinish());
+            })
+            .catch(err => {
+                dispatch(sensorFail(err));
+            });
     };
 }
 
@@ -171,10 +186,12 @@ export const getSensorData = (uid, identifier) => {
         })
         .then(res => {
             dispatch(sensorGetDataSuccess(res.data.data, identifier));
+        })
+        .then(() => {
             dispatch(sensorFinish());
         })
         .catch(err => {
             dispatch(sensorFail(err));
-        })
+        });
     };
 }

@@ -11,8 +11,6 @@ import Spinner from '../../ui/spinner/spinner';
 import Modal from '../../ui/modal/modal';
 import DeleteSensor from '../modal/deleteSensor';
 
-// import sensors from '../../../configuration/sensors';
-
 const List = () => {
 
     const dispatch = useDispatch();
@@ -60,7 +58,7 @@ const List = () => {
                 {spinner}
             
             {error &&
-                <div className='alert alert-danger' role='alert'>
+                <div className='alert alert-danger text-wrap text-break' role='alert'>
                     {error.message}
                 </div>
             }

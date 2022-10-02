@@ -3,10 +3,9 @@ import moment from 'moment';
 
 const Details = (props) => {
 
-    const { sensor } = props;
+    const { sensor, lastSensorMessage } = props;
     const { organisation, department, site, system, type, commissioned, upper, lower, calibrated, validForWeeks, status, created, updated, purpose } = sensor[Object.keys(sensor)];
 
-    const { lastSensorMessage } = props;
     const { timestamp, value } = lastSensorMessage;
 
     return (
@@ -21,8 +20,8 @@ const Details = (props) => {
                     <li className='list-group-item'><strong>Type: </strong>{type}</li>
                 </ul>
             <li className='list-group-item border-top'><strong>Live: </strong>{moment(commissioned).startOf('day').fromNow()}</li>
-            <li className='list-group-item'><strong>Data: </strong>{moment(timestamp).startOf('hour').fromNow()}</li>
-            <li className='list-group-item'><strong>Value: </strong>{value} °C</li>
+            <li className='list-group-item'><strong>Data: </strong>{timestamp ? moment(timestamp).startOf('hour').fromNow() : 'No Data'}</li>
+            <li className='list-group-item'><strong>Value: </strong>{value ? value : 'No Data'} °C</li>
             <li className='list-group-item'><strong>Thresholds:</strong></li>
                 <ul className='list-group-flush'>
                     <li className='list-group-item'><strong>Upper: </strong>{upper} °C</li>
