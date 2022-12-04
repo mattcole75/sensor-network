@@ -9,29 +9,27 @@ import Spinner from '../../ui/spinner/spinner';
 import Backdrop from '../../ui/backdrop/backdrop';
 
 import sites from '../../../configuration/sites';
-import systems from '../../../configuration/systems';
-import types from '../../../configuration/types';
 import organisations from '../../../configuration/organisations';
 import departments from '../../../configuration/departments';
 import status from '../../../configuration/status';
 
-const SensorForm = () => {
+const PointForm = () => {
 
     const { uid } = useParams();
 
-    const loading = useSelector(state => state.sensor.loading);
-    const error = useSelector(state => state.sensor.error);
-    const identifier = useSelector(state => state.sensor.identifier);
-    const redirectPath = useSelector(state => state.sensor.sensorRedirectPath);
-    const sensor = useSelector(state => state.sensor.sensor);
+    const loading = useSelector(state => state.point.loading);
+    const error = useSelector(state => state.point.error);
+    const identifier = useSelector(state => state.point.identifier);
+    const redirectPath = useSelector(state => state.point.pointRedirectPath);
+    const point = useSelector(state => state.point.point);
 
     const dispatch = useDispatch();
 
     const [redirect, setRedirect] = useState(null);
 
-    const onPostSensor = useCallback((data, identifier) => dispatch(action.postSensor(data, identifier)), [dispatch]);
-    const onGetSensor = useCallback((uid, identifier) => dispatch(action.getSensor(uid, identifier)), [dispatch]);
-    const onPatchSensor = useCallback((uid, data, identifier) => dispatch(action.patchSensor(uid, data, identifier)), [dispatch]);
+    const onPostPoint = useCallback((data, identifier) => dispatch(action.postPoint(data, identifier)), [dispatch]);
+    const onGetPoint = useCallback((uid, identifier) => dispatch(action.getPoint(uid, identifier)), [dispatch]);
+    const onPatchPoint = useCallback((uid, data, identifier) => dispatch(action.patchPoint(uid, data, identifier)), [dispatch]);
 
     const { register, handleSubmit, reset } = useForm({
         mode: 'onChange'
@@ -39,37 +37,37 @@ const SensorForm = () => {
 
     const onSubmit = useCallback((data) => {
 
-        if(sensor){
-            onPatchSensor(uid, {
+        if(point){
+            onPatchPoint(uid, {
                 ...data,
                 updated: moment().format()
-            }, 'PATCH_SENSOR');
+            }, 'PATCH_POINT');
         } else {
-            onPostSensor({
+            onPostPoint({
                 ...data,
                 inuse: true,
                 created: moment().format(),
                 updated: moment().format(),
-            }, 'POST_SENSOR');   
+            }, 'POST_POINT');   
         }
         
-    }, [sensor, onPatchSensor, uid, onPostSensor]);
+    }, [point, onPatchPoint, uid, onPostPoint]);
 
     useEffect(() => {
-        if(sensor) {
-            reset(sensor[Object.keys(sensor)]);
+        if(point) {
+            reset(point[Object.keys(point)]);
         }
-    }, [sensor, reset]);
+    }, [reset, point]);
 
     useEffect (() => {
         if(uid !== 'new') {
-            // get sensor from db
-            onGetSensor(uid, 'GET_SENSOR');
+            // get point from db
+            onGetPoint(uid, 'GET_POINT');
         }
-    }, [uid, onGetSensor]);
+    }, [uid, onGetPoint]);
 
     useEffect(() => {
-        if(loading === false && identifier === 'POST_SENSOR') {
+        if(loading === false && identifier === 'POST_POINT') {
             setRedirect(<Navigate to={redirectPath} />);
         }
     }, [identifier, loading, redirectPath, uid]);
@@ -95,8 +93,8 @@ const SensorForm = () => {
 
                 {/* Form heading */}
                 <div className='text-center border-bottom mb-3'>
-                    <i className='bi-robot form-title_icon'></i>
-                    <h1 className='h3 mb-3 fw-normal'>Sensor Details</h1>
+                    <i className='bi-alt form-title_icon'></i>
+                    <h1 className='h3 mb-3 fw-normal'>Points Details</h1>
                 </div>
 
                 {/* UID */}
@@ -106,9 +104,9 @@ const SensorForm = () => {
                     </div>
                     
                     <div className='row g-2'>
-                        {sensor
+                        {point
                             ?   <div className='form-floating  col-sm-6'>
-                                    <input type='text' className='form-control' id='uid' value={Object.keys(sensor)} placeholder='uid' disabled />
+                                    <input type='text' className='form-control' id='uid' value={Object.keys(point)} placeholder='uid' disabled />
                                     <label htmlFor='uid' className='form-label'>UID</label>
                                 </div>
                             : null
@@ -117,53 +115,6 @@ const SensorForm = () => {
                             <input type='text' className='form-control' id='name' autoComplete='off' placeholder='id' required
                                 {...register('name', { required: true })} />
                             <label htmlFor='name' className='form-label'>Name</label>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Taxonomy */}
-                <div className='mb-3'>
-                    <div className='text-start'>
-                        <h4 className='h4 fw-normal'>Taxonomy</h4>
-                    </div>
-                    <div className='row g-2'>
-                        <div className='form-floating col-sm-4'>
-                            <select className='form-select form-select_truncate' id='site' required
-                                {...register('site', { required: true })}>
-                                <option value=''>Choose...</option>
-                                {
-                                    sites.map((item, index) => (
-                                        <option key={index} value={item.site}>{item.site}</option>
-                                    ))
-                                }
-                            </select>
-                            <label htmlFor='site'>Site</label>
-                        </div>
-
-                        <div className='form-floating  col-sm-4'>
-                            <select className='form-select form-select_truncate' id='system' required
-                                {...register('system', { required: true })}>
-                                <option value=''>Choose...</option>
-                                {
-                                    systems.map((item, index) => (
-                                        <option key={index} value={item.system}>{item.system}</option>
-                                    ))
-                                }
-                            </select>
-                            <label htmlFor='system'>System</label>
-                        </div>
-
-                        <div className='form-floating col-sm-4 mb-1'>
-                            <select className='form-select form-select_truncate' id='type' required
-                                {...register('type', { required: true })}>
-                                <option value=''>Choose...</option>
-                                {
-                                    types.map((item, index) => (
-                                        <option key={index} value={item.type}>{item.type}</option>
-                                    ))
-                                }
-                            </select>
-                            <label htmlFor='type'>Type</label>
                         </div>
                     </div>
                 </div>
@@ -214,8 +165,39 @@ const SensorForm = () => {
                     <div className='text-start'>
                         <h4 className='h4 fw-normal'>Location</h4>
                     </div>
+
                     <div className='row g-2'>
-                        <div className='form-floating  col-sm-6'>
+
+                        <div className='form-floating col-sm-6'>
+                            <select className='form-select form-select_truncate mb-2' id='site' required
+                                {...register('site', { required: true })}>
+                                <option value=''>Choose...</option>
+                                {
+                                    sites.map((item, index) => (
+                                        <option key={index} value={item.site}>{item.site}</option>
+                                    ))
+                                }
+                            </select>
+                            <label htmlFor='site'>Site</label>
+                        </div>
+
+                        <div className='form-floating col-sm-6'>
+                            <select className='form-select form-select_truncate mb-2' id='direction' required
+                                {...register('direction', { required: true })}>
+                                <option value=''>Choose...</option>
+                                <option value='Inbound'>Inbound</option>
+                                <option value='Outbound'>Outbound</option>
+                                <option value='Both'>Both</option>
+                               
+                            </select>
+                            <label htmlFor='direction'>Direction</label>
+                        </div>
+
+
+                    </div>
+
+                    <div className='row g-2'>
+                        <div className='form-floating  col-sm-6 mb-1'>
                             <input type='text' className='form-control' id='latitude' autoComplete='off' placeholder='Date' required
                                 pattern='^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$'
                                 {...register('latitude', { required: true })} />
@@ -227,7 +209,7 @@ const SensorForm = () => {
                                 {...register('longitude', { required: true })} />
                             <label htmlFor='longitude' className='form-label'>Longitude</label>
                         </div>
-                        <div className='form-floating mt-1'>
+                        <div className='form-floating mb-1 mt-1'>
                             <textarea className='form-control' id='description' autoComplete='off' rows='2' style={{height:'auto'}}
                                 placeholder='Location Description' required
                                 {...register('description', { minLength: 10})}
@@ -242,68 +224,24 @@ const SensorForm = () => {
                     <div className='text-start'>
                         <h4 className='h4 fw-normal'>Thresholds</h4>
                     </div>
-                    <div className='row g-2'>
-                        <div className='form-floating  col-sm-6'>
-                            <input type='number' className='form-control' id='upper' autoComplete='off' placeholder='Upper Threshold' required
-                                {...register('upper', { required: true })} />
-                            <label htmlFor='upper' className='form-label'>Upper</label>
-                        </div>
-                        <div className='form-floating col-sm-6 mb-1'>
-                            <input type='number' className='form-control' id='lower' autoComplete='off' placeholder='Lower Threshold' required
-                                {...register('lower', { required: true })} />
-                            <label htmlFor='lower' className='form-label'>Lower</label>
-                        </div>
-                    </div>
-                </div>
 
-                {/* Calibration */}
-                <div className='mb-3'>
-                    <div className='text-start'>
-                        <h4 className='h4 fw-normal'>Calibration</h4>
-                    </div>
-                    <div className='row g-2'>
-                        <div className='form-floating  col-sm-6'>
-                            <input type='date' className='form-control' id='calibrated' autoComplete='off' placeholder='Date'
-                                {...register('calibrated')} />
-                            <label htmlFor='calibrated' className='form-label'>Calibration Date</label>
-                        </div>
-
-                        <div className='form-floating  col-sm-6'>
-                            <input type='number' className='form-control' id='validForWeeks' autoComplete='off' placeholder='No. Weeks Calibration Valid'
-                                {...register('validForWeeks')} />
-                            <label htmlFor='validForWeeks' className='form-label'>Valid for (weeks)</label>
-                        </div>
-
-                        <div className='form-floating'>
-                            <input type='url' className='form-control' id='url' autoComplete='off' placeholder='Location of Certificate'
-                                {...register('url')} />
-                            <label htmlFor='url' className='form-label'>Location of Certificate (URL)</label>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Build Dates */}
-                <div className='mb-3'>
-                    <div className='text-start'>
-                        <h4 className='h4 fw-normal'>Build Dated</h4>
-                    </div>
                     <div className='row g-2'>
                         <div className='form-floating  col-sm-4'>
-                            <input type='date' className='form-control' id='installed' autoComplete='off' placeholder='Date Installed' required
-                                {...register('installed', { required: true })} />
-                            <label htmlFor='installed' className='form-label'>Installed Date</label>
+                            <input type='number' className='form-control' id='swingUpper' autoComplete='off' placeholder='Swing Upper Limit' required
+                                {...register('swingUpperLimit', { required: true })} />
+                            <label htmlFor='swingUpperLimit' className='form-label'>Swing Upper Limit</label>
                         </div>
 
-                        <div className='form-floating  col-sm-4'>
-                            <input type='date' className='form-control' id='commissioned' autoComplete='off' placeholder='Date Commissioned' required
-                                {...register('commissioned', { required: true })} />
-                            <label htmlFor='commissioned' className='form-label'>Commissioned Date</label>
+                        <div className='form-floating col-sm-4 mb-1'>
+                            <input type='number' className='form-control' id='swingLowerLimit' autoComplete='off' placeholder='Swing Lower Threshold' required
+                                {...register('swingLowerLimit', { required: true })} />
+                            <label htmlFor='swingLowerLimit' className='form-label'>Swing Lower Limit</label>
                         </div>
 
-                        <div className='form-floating  col-sm-4'>
-                            <input type='date' className='form-control' id='Decommissioned' autoComplete='off' placeholder='Date Decommissioned'
-                                {...register('Decommissioned', { required: false })} />
-                            <label htmlFor='Decommissioned' className='form-label'>Decommissioned Date</label>
+                        <div className='form-floating col-sm-4 mb-1'>
+                            <input type='number' className='form-control' id='sracLimit' autoComplete='off' placeholder='Swing Lower Threshold' required
+                                {...register('sracLimit', { required: true })} />
+                            <label htmlFor='sracLimit' className='form-label'>SRAC Limit</label>
                         </div>
                     </div>
                 </div>
@@ -344,4 +282,4 @@ const SensorForm = () => {
     );
 }
 
-export default SensorForm;
+export default PointForm;

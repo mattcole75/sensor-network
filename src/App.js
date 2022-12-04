@@ -33,6 +33,15 @@ const App = () => {
     const SensorView = React.lazy(() => {
         return import('./pages/sensorView');
     });
+    const Points = React.lazy(() => {
+        return import('./pages/points/points');
+    });
+    const PointForm = React.lazy(() => {
+        return import('./pages/points/pointEdit');
+    });
+    const PointView = React.lazy(() => {
+        return import('./pages/points/pointView');
+    });
 
     const routes = (
 		<Routes>
@@ -42,6 +51,9 @@ const App = () => {
             { isAuthenticated && <Route path='/sensors' element={ <Sensors /> } /> }
             { isAuthenticated && <Route path='/sensoredit/:uid' element={ <SensorForm /> } /> }
             { isAuthenticated && <Route path='/sensorview/:uid' element={ <SensorView /> } /> }
+            { isAuthenticated && <Route path='/points' element={ <Points /> } /> }
+            { isAuthenticated && <Route path='/pointedit/:uid' element={ <PointForm /> } /> }
+            { isAuthenticated && <Route path='/pointview/:uid' element={ <PointView /> } /> }
 			<Route path='*' element={ <Index /> } />
 		</Routes>
 	);

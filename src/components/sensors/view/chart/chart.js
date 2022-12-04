@@ -106,25 +106,24 @@ const Chart = (props) => {
                     title="Sensor Data Live"
                     titleStyle={{ fill: "#555", fontWeight: 500 }}
                     timeRange={series.range()}
-                    format="%d/%m"
+                    // format="%d/%m"
                     timeAxisTickCount={5}
                     trackerPosition={tracker}
                     onTrackerChanged={handleTrackerChanged}
                 >
                     <ChartRow 
-                        height="150"
+                        height='200'
                         trackerInfoValues={[
                             { label: 'Temp (°C)', value: String(trackerTempValue) },
                             { label: 'Time', value: String(trackerTempTime) }
                         ]}
                         trackerInfoHeight={50}>
                         <YAxis
-                            id="temp"
-                            label="Temp (°C)"
+                            id='temp'
+                            label='Temp (°C)'
                             min={series.min()}
                             max={series.max()}
-                            width="60"
-                            format=".2f"
+                            width='60'
                         />
                         <Charts>
                             <LineChart axis="temp" series={series} style={style} />

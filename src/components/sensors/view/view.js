@@ -10,6 +10,7 @@ import Details from './details/details';
 import Map from './map/map';
 // import sensors from '../../../configuration/sensors';
 import Chart from './chart/chart';
+import moment from 'moment';
 
 const View = () => {
 
@@ -27,7 +28,7 @@ const View = () => {
     const onGetSensor = useCallback((uid, identifier) => dispatch(action.getSensor(uid, identifier)), [dispatch]);
     const onGetSensorData = useCallback((uid, identifier) => dispatch(action.getSensorData(uid, identifier)), [dispatch]);
 
-    const [lastSensorMessage, setLastSensorMessage] = useState(null);
+    const [lastSensorMessage, setLastSensorMessage] = useState({ timestamp: moment().format(), value: 0 });
 
     useEffect(() => {
         onGetSensor(uid, 'GET_SENSOR');
@@ -35,7 +36,7 @@ const View = () => {
     }, [onGetSensor, uid, onGetSensorData]);
 
     useEffect(() => {
-        if(data) {
+        if(data && data.length > 0) {
             setLastSensorMessage(data.at(-1));
         }
     }, [data]);
@@ -43,6 +44,7 @@ const View = () => {
     let spinner = null;
     if(loading)
         spinner = <Spinner />;
+    
 
     return (
         <div className=' container my-5 shadow-sm'>
@@ -58,7 +60,7 @@ const View = () => {
             <div className='row g-2'>
 
                 <div className='form-floating'>
-                    {data
+                    {(data && data.length > 0)
                         ? <Chart data={data} />
                         : null
                     }
@@ -79,9 +81,7 @@ const View = () => {
                         }} zoomLevel={14} />
                         : <div>Loading...</div>
                     }
-                    
                 </div>
-
             </div>
         </div>
     );

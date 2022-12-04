@@ -7,12 +7,14 @@ import { configureStore } from '@reduxjs/toolkit'
 import App from './App';
 import authReducer from './store/reducers/auth';
 import sensorReducer from './store/reducers/sensor';
+import pointReducer from './store/reducers/point';
 // import reportWebVitals from './reportWebVitals';
 
 const store = configureStore({
     reducer: {
         auth: authReducer,
-        sensor: sensorReducer
+        sensor: sensorReducer,
+        point: pointReducer
     }
 });
 

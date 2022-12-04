@@ -4,194 +4,195 @@ import axios from '../../shared/axios';
 import * as type from './types';
 import { spark_api_key } from '../../configuration/config';
 
-const sensorStart = () => {
-    return { type: type.SENSOR_START };
+const pointStart = () => {
+    return { type: type.POINT_START };
 }
 
-const sensorPostSuccess = (id, sensor, identifier) => {
+const pointPostSuccess = (id, point, identifier) => {
     return {
-        type: type.SENSOR_POST_SUCCESS,
+        type: type.POINT_POST_SUCCESS,
         id: id,
-        sensor: sensor,
+        point: point,
         identifier: identifier
     };
 }
 
-const sensorsGetSuccess = (sensors, identifier) => {
+const pointsGetSuccess = (points, identifier) => {
     return {
-        type: type.SENSORS_GET_SUCCESS,
-        sensors: sensors,
+        type: type.POINTS_GET_SUCCESS,
+        points: points,
         identifier: identifier
     };
 }
 
-const sensorGetSuccess = (sensor, identifier) => {
+const pointGetSuccess = (point, identifier) => {
     return {
-        type: type.SENSOR_GET_SUCCESS,
-        sensor: sensor,
+        type: type.POINT_GET_SUCCESS,
+        point: point,
         identifier: identifier
     };
 }
 
-const sensorPatchSuccess = (uid, sensor, identifier) => {
+const pointPatchSuccess = (uid, point, identifier) => {
     return {
-        type: type.SENSOR_PATCH_SUCCESS,
+        type: type.POINT_PATCH_SUCCESS,
         uid: uid,
-        sensor: sensor,
+        point: point,
         identifier: identifier
     };
 }
 
-const sensorGetDataSuccess = (data, identifier) => {
+const pointGetSparkDataSuccess = (data, identifier) => {
     return {
-        type: type.SENSOR_GET_DATA_SUCCESS,
+        type: type.POINT_GET_SPARK_DATA_SUCCESS,
         data: data,
         identifier: identifier
     };
 }
 
-const sensorFinish = () => {
-    return { type: type.SENSOR_FINISH };
+const pointFinish = () => {
+    return { type: type.POINT_FINISH };
 }
 
-const sensorFail = (error) => {
+const pointFail = (error) => {
     return {
-        type: type.SENSOR_FAIL,
+        type: type.POINT_FAIL,
         error: error
     };
 }
 
 // exported functions
-export const postSensor = (data, identifier) => {
-
+export const postPoint = (data, identifier) => {
     return async dispatch => {
+        dispatch(pointStart());
 
-        dispatch(sensorStart());
-
-        await addDoc(collection(db, 'sensors'), data)
+        await addDoc(collection(db, 'points'), data)
             .then(res => {
                 const { id } = res
-                dispatch(sensorPostSuccess(id, data, identifier));
+                dispatch(pointPostSuccess(id, data, identifier));
             })
             .then(() => {
-                dispatch(sensorFinish());
+                dispatch(pointFinish());
             })
             .catch(err => {
-                dispatch(sensorFail(err));
+                dispatch(pointFail(err));
             });
     };
 }
 
-export const getSensors = (site, status, identifier) => {
+export const getPoints = (site, status, identifier) => {
 
     return  async dispatch => {
 
-        dispatch(sensorStart());
+        dispatch(pointStart());
 
         let result = [];
         let queryFilter = null;
 
         if(site !== '' && status !== '') {
-            queryFilter = query(collection(db, 'sensors'),
+            queryFilter = query(collection(db, 'points'),
                 where('inuse', '==', true),
                 where('site', '==', site),
                 where('status', '==', status),
-                orderBy('installed', 'desc'));
+                orderBy('name', 'desc'));
         } else if(site !== ''){
-            queryFilter = query(collection(db, 'sensors'),
+            queryFilter = query(collection(db, 'points'),
                 where('inuse', '==', true),
                 where('site', '==', site),
-                orderBy('installed', 'desc'));
+                orderBy('name', 'desc'));
         }
         else if (status !== '') {
-            queryFilter = query(collection(db, 'sensors'),
+            queryFilter = query(collection(db, 'points'),
                 where('inuse', '==', true),
                 where('status', '==', status),
-                orderBy('installed', 'desc'));
+                orderBy('name', 'desc'));
         } else {
-            queryFilter = query(collection(db, 'sensors'),
+            queryFilter = query(collection(db, 'points'),
                 where('inuse', '==', true),
-                orderBy('installed', 'desc'));
+                orderBy('name', 'desc'));
         }
         
-
         await getDocs(queryFilter)
             .then(res => {
                 // eslint-disable-next-line array-callback-return
                 res.docs.map(doc => {
                     result.push({ [doc.id]: doc.data() });
                 })
-                dispatch(sensorsGetSuccess(result, identifier));
+                dispatch(pointsGetSuccess(result, identifier));
             })
             .then(() => {
-                dispatch(sensorFinish());
+                dispatch(pointFinish());
             })
             .catch(err => {
-                dispatch(sensorFail(err));
+                dispatch(pointFail(err));
             });
     };
 }
 
-export const getSensor = (uid, identifier) => {
+export const getPoint = (uid, identifier) => {
 
     return async dispatch => {
 
-        dispatch(sensorStart());
+        dispatch(pointStart());
 
-        const ref = doc(db, "sensors", uid);
+        const ref = doc(db, 'points', uid);
 
         await getDoc(ref)
             .then(doc => {
-                dispatch(sensorGetSuccess({ [doc.id]: doc.data() }, identifier));
+                dispatch(pointGetSuccess({ [doc.id]: doc.data() }, identifier));
             })
             .then (() => {
-                dispatch(sensorFinish());
+                dispatch(pointFinish());
             })
             .catch(err => {
-                dispatch(sensorFail(err));
+                dispatch(pointFail(err));
             });
     };
 }
 
-export const patchSensor = (uid, data, identifier) => {
+export const patchPoint = (uid, data, identifier) => {
 
     return async dispatch => {
 
-        dispatch(sensorStart());
+        dispatch(pointStart());
 
-        const ref = doc(db, "sensors", uid);
+        const ref = doc(db, "points", uid);
 
         await updateDoc(ref, data)
             .then(() => {
-                dispatch(sensorPatchSuccess(uid, { [uid]: data }, identifier));
+                dispatch(pointPatchSuccess(uid, { [uid]: data }, identifier));
             })
             .then(() => {
-                dispatch(sensorFinish());
+                dispatch(pointFinish());
             })
             .catch(err => {
-                dispatch(sensorFail(err));
+                dispatch(pointFail(err));
             });
     };
 }
 
-export const getSensorData = (uid, identifier) => {
+export const getPointSparkData = (uid, startDate, endDate, identifier) => {
 
     return dispatch => {
+        dispatch(pointStart());
+
         axios.get('/sensordata', {
             headers: {
                 'Content-Type': 'application/json',
                 idToken: spark_api_key,
+                startDate: startDate,
+                endDate: endDate,
                 param: uid
             }
         })
         .then(res => {
-            dispatch(sensorGetDataSuccess(res.data.data, identifier));
+            dispatch(pointGetSparkDataSuccess(res.data.data, identifier));
         })
         .then(() => {
-            dispatch(sensorFinish());
+            dispatch(pointFinish());
         })
         .catch(err => {
-            dispatch(sensorFail(err));
+            dispatch(pointFail(err));
         });
     };
 }

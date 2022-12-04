@@ -4,22 +4,22 @@ import moment from 'moment';
 import * as action from '../../../store/actions/index';
 
 import Filter from '../filter/filter';
-import ListItem from './listItem.js/listItem';
+import ListItem from './listItem/listItem';
 
 import Backdrop from '../../ui/backdrop/backdrop';
 import Spinner from '../../ui/spinner/spinner';
 import Modal from '../../ui/modal/modal';
-import DeleteSensor from '../modal/deleteSensor';
+import DeletePoint from '../modal/deletePoint';
 
 const List = () => {
 
     const dispatch = useDispatch();
 
-    const loading = useSelector(state => state.sensor.loading);
-    const error = useSelector(state => state.sensor.error);
-    const sensors = useSelector(state => state.sensor.sensors);
+    const loading = useSelector(state => state.point.loading);
+    const error = useSelector(state => state.point.error);
+    const points = useSelector(state => state.point.points);
 
-    const onPatchSensor = useCallback((uid, data, identifier) => dispatch(action.patchSensor(uid, data, identifier)), [dispatch]);
+    const onPatchPoint = useCallback((uid, data, identifier) => dispatch(action.patchPoint(uid, data, identifier)), [dispatch]);
 
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -29,19 +29,19 @@ const List = () => {
         setShowDeleteModal(prevState => !prevState);
     }
 
-    const onDeleteSensor = useCallback((uid) => {
-        onPatchSensor(uid, { inuse: false, updated: moment().format() }, 'DELETE_SENSOR');
-    }, [onPatchSensor]);
+    const onDeletePoint = useCallback((uid) => {
+        onPatchPoint(uid, { inuse: false, updated: moment().format() }, 'DELETE_POINT');
+    }, [onPatchPoint]);
 
     let modal = null;
     if(showDeleteModal) {
         modal = <Modal 
                     show={ showDeleteModal } 
                     modalClosed={ toggleShowDeleteModal } 
-                    content={ <DeleteSensor 
+                    content={ <DeletePoint 
                         deleteItem={deleteItem} 
                         toggle={toggleShowDeleteModal}
-                        onDeleteSensor={onDeleteSensor} />
+                        onDeletePoint={onDeletePoint} />
                     }
             />
     }
@@ -68,15 +68,14 @@ const List = () => {
                         <th className='ps-3 pe-3 table-item_hide'><div className='table-item_col'>UID</div></th>
                         <th className='ps-3 pe-3 table-verticle_center'><div className='table-item_col'>Name</div></th>
                         <th className='ps-3 pe-3 table-verticle_center'><div className='table-item_col'>Site</div></th>
-                        <th className='ps-3 pe-3 table-verticle_center'><div className='table-item_col'>Type</div></th>
+                        <th className='ps-3 pe-3 table-item_hide'>Direction</th>
                         <th className='ps-3 pe-3'>Status</th>
-                        <th className='ps-3 pe-3 table-item_hide'>Commissioned</th>
                         <th className='ps-3 pe-3'></th>
                     </tr>
                 </thead>
                 <tbody>
                     {
-                        sensors.map((item, index) => {
+                        points.map((item, index) => {
                             return <ListItem key={index} item={item} toggleShowDeleteModal={toggleShowDeleteModal} setDeleteItem={setDeleteItem} />
                         })
                     }

@@ -19,6 +19,7 @@ const navigationItems = (props) => (
 						<ul className='dropdown-menu text-small' aria-labelledby='dropdownUser1'>
 							<DropdownNavigationItem link='/dashboard' icon='bi-speedometer2'>  Dashboard</DropdownNavigationItem>
 							<DropdownNavigationItem link='/sensors' icon='bi-robot'>  Sensors</DropdownNavigationItem>
+							<DropdownNavigationItem link='/points' icon='bi-alt'>  Points</DropdownNavigationItem>
 						</ul>
 					</div>
 					: null

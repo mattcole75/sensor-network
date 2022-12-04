@@ -126,6 +126,10 @@
     height: 100%;
 }
 
+.point-list {
+  max-width: 18rem;
+}
+
 @media (max-width: 1024px) {
 
 }
@@ -136,7 +140,7 @@
 
 @media (max-width: 600px) {
 
-    .table-item_date {
+    .table-item_hide {
         display: none;
     }
     .table-item_col {

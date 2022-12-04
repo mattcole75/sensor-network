@@ -67,7 +67,7 @@ const sensorPatchSuccess = (state, action) => {
     const index = state.sensors.findIndex(sen => sen.hasOwnProperty(action.uid));
     const updatedSensors = [ ...state.sensors ];
 
-    if(action.identifier === 'DELETE_SENSOR'){
+    if(action.identifier === 'DELETE_SENSOR') {
         updatedSensors.splice(index, 1)
     } else {
         updatedSensors[index] = action.sensor;

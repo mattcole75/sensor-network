@@ -12,3 +12,11 @@ export {
     patchSensor,
     getSensorData
 } from './sensor';
+
+export {
+    postPoint,
+    getPoints,
+    getPoint,
+    patchPoint,
+    getPointSparkData
+} from './point';
